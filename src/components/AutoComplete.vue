@@ -126,6 +126,8 @@
         input {
             font-size: inherit;
             width: 100%;
+            border-radius: 0;
+            padding: 25px 5px;
         }
         .autocomplete-results {
             padding: 0;

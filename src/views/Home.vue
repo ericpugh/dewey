@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <nav class="navbar fixed-top navbar-light bg-light justify-content-between">
+    <nav class="navbar fixed-top navbar-light bg-light shadow-sm">
       <span class="navbar-brand">
         <img alt="Smithsonian American Art logo" src="../assets/logo.png" height="40px">
       </span>
