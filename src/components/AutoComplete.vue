@@ -7,6 +7,9 @@
                 @keydown.down="onArrowDown"
                 @keydown.up="onArrowUp"
                 @keydown.enter="onEnter"
+                placeholder="i.e. 1984.149.1"
+                autofocus="autofocus"
+                class="form-control table-cell fill-width"
         />
         <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
             <li class="loading" v-if="isLoading">
@@ -119,9 +122,7 @@
 <style scoped lang="scss">
     .autocomplete {
         position: relative;
-        width: 75%;
-        margin: 0 auto;
-        font-size: 2.5rem;
+        font-size: 2rem;
         input {
             font-size: inherit;
             width: 100%;
@@ -133,6 +134,9 @@
             height: 200px;
             overflow: auto;
             width: 100%;
+            position: absolute;
+            z-index: 99999;
+            background-color: #ffffff;
         }
         .autocomplete-result {
             list-style: none;

@@ -1,5 +1,5 @@
 <template>
-    <div class="artwork">
+    <div class="artwork alert">
         <h1>insert artwork here!</h1>
     </div>
 </template>
