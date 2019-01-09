@@ -10,6 +10,19 @@ export default new Router({
       path: "/",
       name: "home",
       component: Home
+    },
+    {
+      path: '/help',
+      name: "help",
+        component: () =>
+            import("./views/Help.vue")
+    },
+    {
+      path: '/saved',
+      name: "saved",
+        component: () =>
+            import("./views/Saved.vue")
     }
   ]
 });
+
