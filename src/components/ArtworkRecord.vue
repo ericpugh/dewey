@@ -2,6 +2,7 @@
     <div class="artwork">
         <div v-if="artwork" class="result">
             <h1 v-if="artwork.title" class="display-3">{{ artwork.title }}</h1>
+            <ArtworkImage :src="artwork.medium_image_url" :alt="artwork.title" title="artwork.title"></ArtworkImage>
             <div v-if="artwork.exhibition_label" class="description card bg-light">
                 <div class="card-body">
                     <h5 class="card-title">Exhibition Label</h5>
@@ -26,9 +27,14 @@
 </template>
 
 <script>
-    import Artwork from '../models/ArtworkClass'
+    import Artwork from '../models/ArtworkClass';
+    import ArtworkImage from "@/components/ArtworkImage.vue";
+
     export default {
         name: 'ArtworkRecord',
+        components: {
+            ArtworkImage
+        },
         computed: {
             artwork() {
                 return this.$store.state.artwork.artwork

@@ -3,12 +3,13 @@
 import store from '../store'
 
 export default class Artwork {
-    constructor (rawData = {}) {
-        this.id = rawData.id;
-        this.title = rawData.attributes.title;
-        this.exhibition_label = rawData.attributes.exhibition_label ?  rawData.attributes.exhibition_label.processed : '';
-        this.gallery_label = rawData.attributes.gallery_label ?  rawData.attributes.gallery_label.processed : '';
-        this.default_image_id = rawData.relationships.default_image ? rawData.relationships.default_image.data.id : '';
-        //@TODO: get included
+    constructor (data = {}) {
+        this.id = data.id;
+        this.title = data.title;
+        this.exhibition_label = data.exhibition_label;
+        this.gallery_label = data.gallery_label;
+        this.original_image_url = data.original_image_url;
+        this.thumbnail_image_url = data.thumbnail_image_url;
+        this.medium_image_url = data.medium_image_url;
     }
 }
