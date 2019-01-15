@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <Navbar/>
-        <h1>This is the saved list page.</h1>
+        <h1 class="display-3">Recently Viewed</h1>
         <ul class="list-group">
             <li class="list-group-item">Cras justo odio</li>
             <li class="list-group-item">Dapibus ac facilisis in</li>
@@ -16,7 +16,7 @@
     import Navbar from "@/components/Navbar.vue";
 
     export default {
-        name: "saved",
+        name: "recent",
         components: {
             Navbar
         }

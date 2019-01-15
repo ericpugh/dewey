@@ -10,7 +10,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <router-link to="/saved" class="nav-link">
+                    <router-link to="/recent" class="nav-link">
                         <img height="30" width="30" src="~open-iconic/svg/bookmark.svg" alt="bookmark" />
                         Saved
                     </router-link>

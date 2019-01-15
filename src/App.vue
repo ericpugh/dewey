@@ -1,5 +1,6 @@
 <template>
   <div id="app" class="container">
+    <!--Get the view from route-->
     <router-view/>
   </div>
 </template>
@@ -11,5 +12,6 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    text-align: left;
   }
 </style>

@@ -18,10 +18,10 @@ export default new Router({
             import("./views/Help.vue")
     },
     {
-      path: '/saved',
-      name: "saved",
+      path: '/recent',
+      name: "recent",
         component: () =>
-            import("./views/Saved.vue")
+            import("./views/Recent.vue")
     }
   ]
 });
