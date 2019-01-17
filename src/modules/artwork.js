@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import Artwork from '../models/ArtworkClass'
 import axios from 'axios';
+// @TODO: a better way to include lodash in entire project? see: https://vuejsdevelopers.com/2017/04/22/vue-js-libraries-plugins/
 import _ from 'lodash';
 
 export default {
@@ -116,8 +117,8 @@ export default {
                     const artwork = new Artwork(results[0]);
                     console.log(artwork);
                     // uses Vue.set to be sure to be deeply reactive
-                    context.commit('setArtwork', artwork)
-                    return Promise.resolve(context.state.artwork)
+                    context.commit('setArtwork', artwork);
+                    return Promise.resolve(context.state.artwork);
                 })
                 .catch(error => {
                     // in case of error, empties the Artwork

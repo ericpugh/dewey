@@ -71,7 +71,6 @@
         </div>
         <div v-if="artwork.luce_object_quote" class="description card bg-light">
             <div class="card-body">
-                <h5 class="card-title">Luce Center Label</h5>
                 <blockquote v-html="artwork.luce_object_quote" class="card-text">
                     {{ artwork.luce_object_quote }}
                 </blockquote>
@@ -79,7 +78,7 @@
         </div>
         <div v-if="artwork.new_acquisition_label" class="description card bg-light">
             <div class="card-body">
-                <h5 class="card-title">Aquisition Label</h5>
+                <h5 class="card-title">Acquisition Label</h5>
                 <div v-html="artwork.new_acquisition_label" class="card-text">
                     {{ artwork.new_acquisition_label }}
                 </div>
@@ -98,7 +97,7 @@
 </template>
 
 <script>
-    import Artwork from '../models/ArtworkClass';
+    // import Artwork from '../models/ArtworkClass';
     import ArtworkImage from "@/components/ArtworkImage.vue";
 
     export default {

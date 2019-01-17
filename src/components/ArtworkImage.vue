@@ -1,5 +1,5 @@
 <template>
-        <img class="thumbnail"/>
+        <img class="img-fluid"/>
 </template>
 
 <script>
