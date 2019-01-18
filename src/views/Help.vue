@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="help page">
         <Navbar/>
         <h1 class="display-3">Help</h1>
         <p class="text-muted">Using this application to find an Artwork.</p>

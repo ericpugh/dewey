@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="search page">
     <Navbar/>
         <div class="autocomplete input-group">
             <input v-model="object_number"
@@ -29,10 +29,11 @@
                 </li>
             </ul>
         </div>
-      <div v-if="loading">
-          <img src=""/>
-          <strong>Loading.....</strong>
+
+      <div v-if="loadingArtwork" class="display-4 text-center">
+          <p class="loading animate">Loading<span>.</span><span>.</span><span>.</span></p>
       </div>
+
       <ArtworkRecord/>
   </div>
 </template>
@@ -42,9 +43,10 @@
     import axios from 'axios';
     import Navbar from "@/components/Navbar.vue";
     import ArtworkRecord from "@/components/ArtworkRecord.vue";
+    import { mapWaitingGetters } from 'vue-wait'
 
     export default {
-      name: "home",
+      name: "search",
       components: {
         Navbar,
         ArtworkRecord
@@ -59,25 +61,26 @@
       data: function () {
           return {
               object_number: '',
-              loading: false,
               autocompleteResults: [],
-              isAutocompleteOpen: false,
+              isAutocompleteOpen: false, // TODO: use vue-wat for autocomplete loading?
               isAutocompleteLoading: false,
               autocompleteArrowCounter: 0,
-
           }
       },
       methods: {
-          submit () {
-            this.loading = true,
-              this.$store.dispatch('artwork/search', this.object_number).then(() => {
-                  this.loading = false;
+          submit: async function () {
+              // TODO: disable the "submit" button if the input value is equal to the current object number.
+              this.$wait.start('artwork loading');
+              this.isAutocompleteOpen = false;
+              this.autocompleteArrowCounter = -1;
+              await this.$store.dispatch('artwork/search', this.object_number).then(() => {
+                  this.$wait.end('artwork loading');
               });
           },
           onAutocompleteChange() {
               // @TODO: load autocomplete items from American Art API, don't show autocomplete box if empty results.
 
-              // Is the data given by an outside ajax request?
+              // Is the autocomplete data given by an outside ajax request?
 //                if (this.isAsync) {
 //                    this.isAutocompleteLoading = true;
 //                } else {
@@ -94,6 +97,7 @@
           setAutocompleteResult(result) {
               this.object_number = result;
               this.isAutocompleteOpen = false;
+              this.submit(this.object_number);
           },
           onAutocompleteArrowDown() {
               if (this.autocompleteArrowCounter < this.autocompleteResults.length) {
@@ -109,7 +113,6 @@
               this.object_number = this.autocompleteResults[this.autocompleteArrowCounter];
               this.isAutocompleteOpen = false;
               this.autocompleteArrowCounter = -1;
-              this.submit(this.object_number);
           },
           handleAutocompleteClickOutside(evt) {
               if (!this.$el.contains(evt.target)) {
@@ -125,8 +128,14 @@
                   this.autocompleteResults = val;
                   this.isAutocompleteLoading = false;
               }
-          },
+          }
       },
+      computed: {
+          ...mapWaitingGetters({
+              loadingArtwork: 'artwork loading',
+          })
+      },
+
       mounted() {
           document.addEventListener('click', this.handleAutocompleteClickOutside)
       },

@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="recent page">
         <Navbar/>
         <h1 class="display-3">Recently Viewed</h1>
         <ul class="list-group">

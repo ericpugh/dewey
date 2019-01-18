@@ -26,7 +26,7 @@ export default {
     actions: {
         /** Search for a artwork matching an Object Number string  **/
         // TODO: move all the response parsing to a seperate action OR "MUTATION"???
-        search: (context, searchString) => {
+        search: async (context, searchString) => {
             if (!searchString) {
                 context.commit('setArtwork', {})
                 return Promise.resolve({})
@@ -52,7 +52,7 @@ export default {
                 //    '&filter[is-on-view-filter][condition][memberOf]=filter-group' +
                 '&page[limit]=1';
 
-            axios.get(endpoint + filters)
+            await axios.get(endpoint + filters)
                 .then((response)  => {
                     // Convert response data to Artwork class.
                     var artworks = response.data.data;
@@ -82,6 +82,7 @@ export default {
                             new_acquisition_label: artwork.attributes.new_acquisition_label ?  artwork.attributes.new_acquisition_label.processed : '',
                             publication_label: artwork.attributes.publication_label ?  artwork.attributes.publication_label.processed : '',
                     };
+                        // @TODO: get videos field!
                         // Parse the Ontology array items for friendly output.
                         if (artwork.attributes.ontology) {
                             var parsed = [];
