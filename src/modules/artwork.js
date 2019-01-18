@@ -26,7 +26,7 @@ export default {
     actions: {
         /** Search for a artwork matching an Object Number string  **/
         // TODO: move all the response parsing to a seperate action OR "MUTATION"???
-        search: async (context, searchString) => {
+        fetch: async (context, searchString) => {
             if (!searchString) {
                 context.commit('setArtwork', {})
                 return Promise.resolve({})
@@ -39,7 +39,7 @@ export default {
             // TODO: install "devour" inorder to include relationships like default_image?
             // TODO: get the full "artist" relationship, maybe a seperate Class/API request?
             var filters = '?' +
-                'fields[arworks]=id,title,exhibition_label,gallery_label' +
+                // 'fields[artworks]=id,title,exhibition_label,gallery_label' +
                 '&include=default_image,artists,institutions,audio' +
                 '&filter[filter-group][group][conjunction]=AND' +
                 '&filter[object-number-filter][condition][path]=object_number' +
@@ -53,7 +53,7 @@ export default {
                 '&page[limit]=1';
 
             await axios.get(endpoint + filters)
-                .then((response)  => {
+                .then((response) => {
                     // Convert response data to Artwork class.
                     var artworks = response.data.data;
                     var included = response.data.included;
@@ -75,13 +75,13 @@ export default {
                             ontology: '',
                             is_new_acquistion: artwork.attributes.is_new_acquistion,
                             is_on_view: artwork.attributes.is_on_view,
-                            exhibition_label: artwork.attributes.exhibition_label ?  artwork.attributes.exhibition_label.processed : '',
-                            gallery_label: artwork.attributes.exhibition_label ?  artwork.attributes.gallery_label.processed : '',
-                            luce_center_label: artwork.attributes.luce_center_label ?  artwork.attributes.luce_center_label.processed : '',
-                            luce_object_quote: artwork.attributes.luce_object_quote ?  artwork.attributes.luce_object_quote.processed : '',
-                            new_acquisition_label: artwork.attributes.new_acquisition_label ?  artwork.attributes.new_acquisition_label.processed : '',
-                            publication_label: artwork.attributes.publication_label ?  artwork.attributes.publication_label.processed : '',
-                    };
+                            exhibition_label: artwork.attributes.exhibition_label ? artwork.attributes.exhibition_label.processed : '',
+                            gallery_label: artwork.attributes.exhibition_label ? artwork.attributes.gallery_label.processed : '',
+                            luce_center_label: artwork.attributes.luce_center_label ? artwork.attributes.luce_center_label.processed : '',
+                            luce_object_quote: artwork.attributes.luce_object_quote ? artwork.attributes.luce_object_quote.processed : '',
+                            new_acquisition_label: artwork.attributes.new_acquisition_label ? artwork.attributes.new_acquisition_label.processed : '',
+                            publication_label: artwork.attributes.publication_label ? artwork.attributes.publication_label.processed : '',
+                        };
                         // @TODO: get videos field!
                         // Parse the Ontology array items for friendly output.
                         if (artwork.attributes.ontology) {
@@ -101,7 +101,7 @@ export default {
                             item.file_id = file_id;
                             // Get image url from the include.
                             _.some(included, function (include, key, list) {
-                                if(include.type === 'files' && include.id === file_id) {
+                                if (include.type === 'files' && include.id === file_id) {
                                     item.original_image_url = include.attributes.uri.url;
                                     item.thumbnail_image_url = include.attributes.uri.url.replace('/files/files/', '/files/styles/max_325x325/s3/files/');
                                     item.medium_image_url = include.attributes.uri.url.replace('/files/files/', '/files/styles/max_650x650/s3/files/');
@@ -126,6 +126,7 @@ export default {
                     context.commit('setArtwork', {})
                     return Promise.reject(error)
                 });
-        },
+        }
     }
-};
+
+}

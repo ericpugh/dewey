@@ -1,147 +1,112 @@
 <template>
   <div class="search page">
     <Navbar/>
-        <div class="autocomplete input-group">
-            <input v-model="object_number"
-                    type="text"
-                    @input="onAutocompleteChange"
-                    @keydown.down="onAutocompleteArrowDown"
-                    @keydown.up="onAutocompleteArrowUp"
-                    @keydown.enter="onAutocompleteEnter"
-                    placeholder="i.e. 1984.149.1"
-                    autofocus="autofocus"
-                    class="form-control table-cell fill-width"
-            />
-            <div class="input-group-append">
-                <button @click="submit" class="btn btn-outline-secondary" type="button">Find</button>
+    <form name="search" class="autocomplete" @submit.prevent="submit">
+        <vue-bootstrap-typeahead
+                :data="autocomplete_results"
+                v-model="autocompleteSearch"
+                size="lg"
+                placeholder="i.e. 1984.149.1"
+                v-on:hit="onAutocompleteSelected"
+                v-on:input="onAutocompleteChange">
+            <div slot="append">
+                <button @click="submit" class="btn btn-outline-secondary form-control-lg" type="button">Find</button>
             </div>
-            <ul id="autocomplete-results" v-show="isAutocompleteOpen" class="autocomplete-results">
-                <li v-if="isAutocompleteLoading" class="loading">
-                    Loading results...
-                </li>
-                <li v-else
-                    v-for="(result, i) in autocompleteResults"
-                    :key="i"
-                    @click="setAutocompleteResult(result)"
-                    class="autocomplete-result"
-                    :class="{ 'is-active': i === autocompleteArrowCounter }">
-                    {{ result }}
-                </li>
-            </ul>
-        </div>
-
+        </vue-bootstrap-typeahead>
+    </form>
       <div v-if="loadingArtwork" class="display-4 text-center">
           <p class="loading animate">Loading<span>.</span><span>.</span><span>.</span></p>
       </div>
-
       <ArtworkRecord/>
   </div>
 </template>
 
 <script>
-    import Artwork from '../models/ArtworkClass'
-    import axios from 'axios';
+    // import Artwork from '../models/ArtworkClass'
     import Navbar from "@/components/Navbar.vue";
     import ArtworkRecord from "@/components/ArtworkRecord.vue";
+    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+    import axios from 'axios';
     import { mapWaitingGetters } from 'vue-wait'
 
     export default {
       name: "search",
       components: {
         Navbar,
-        ArtworkRecord
+        ArtworkRecord,
+        VueBootstrapTypeahead
       },
-      props: {
-          autocompleteItems: {
-              type: Array,
-              required: false,
-              default: () => ['1994.17', '1990.26', '1984.149.1', '1968.155.8', '1968.155.64', '1968.155.15', '1967.116', '1965.16.14'],
-          }
-      },
+      props: {},
       data: function () {
           return {
               object_number: '',
-              autocompleteResults: [],
-              isAutocompleteOpen: false, // TODO: use vue-wat for autocomplete loading?
-              isAutocompleteLoading: false,
-              autocompleteArrowCounter: 0,
+              autocomplete_results: [],
+              autocompleteSearch: ''
           }
       },
       methods: {
           submit: async function () {
+              console.log('Artwork fetch:');
+              console.log('Object Number: ' + this.object_number);
               // TODO: disable the "submit" button if the input value is equal to the current object number.
               this.$wait.start('artwork loading');
-              this.isAutocompleteOpen = false;
-              this.autocompleteArrowCounter = -1;
-              await this.$store.dispatch('artwork/search', this.object_number).then(() => {
+              // TODO: pull Artwork from "recent" list if exists, before making the async action.
+              await this.$store.dispatch('artwork/fetch', this.object_number).then(() => {
                   this.$wait.end('artwork loading');
               });
           },
-          onAutocompleteChange() {
-              // @TODO: load autocomplete items from American Art API, don't show autocomplete box if empty results.
-
-              // Is the autocomplete data given by an outside ajax request?
-//                if (this.isAsync) {
-//                    this.isAutocompleteLoading = true;
-//                } else {
-              // Let's  our flat array
-              this.filterAutocompleteResults();
-              this.isAutocompleteOpen = true;
-//                }
+          onAutocompleteSelected: function(event) {
+              this.object_number = event;
+              this.submit();
           },
-          filterAutocompleteResults() {
-              this.autocompleteResults = this.autocompleteItems.filter((item) => {
-                  return item.indexOf(this.object_number) > -1;
-              });
+          onAutocompleteChange: function(event) {
+              this.object_number = event;
           },
-          setAutocompleteResult(result) {
-              this.object_number = result;
-              this.isAutocompleteOpen = false;
-              this.submit(this.object_number);
-          },
-          onAutocompleteArrowDown() {
-              if (this.autocompleteArrowCounter < this.autocompleteResults.length) {
-                  this.autocompleteArrowCounter = this.autocompleteArrowCounter + 1;
-              }
-          },
-          onAutocompleteArrowUp() {
-              if (this.autocompleteArrowCounter > 0) {
-                  this.autocompleteArrowCounter = this.autocompleteArrowCounter -1;
-              }
-          },
-          onAutocompleteEnter() {
-              this.object_number = this.autocompleteResults[this.autocompleteArrowCounter];
-              this.isAutocompleteOpen = false;
-              this.autocompleteArrowCounter = -1;
-          },
-          handleAutocompleteClickOutside(evt) {
-              if (!this.$el.contains(evt.target)) {
-                  this.isAutocompleteOpen = false;
-                  this.autocompleteArrowCounter = -1;
-              }
+          async getAutocompleteResults(query) {
+              axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
+              axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+              var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
+              var filters = '?' +
+                  'fields[artworks]=object_number' +
+                  '&filter[filter-group][group][conjunction]=AND' +
+                  '&filter[object-number-filter][condition][path]=object_number' +
+                  '&filter[object-number-filter][condition][operator]=STARTS_WITH' +
+                  '&filter[object-number-filter][condition][value]=' + query +
+                  '&filter[object-number-filter][condition][memberOf]=filter-group' +
+                  // TODO: Filter by on view items.
+                  '&sort=object_number';
+              '&page[limit]=10';
+              await axios.get(endpoint + filters)
+                  .then((response) => {
+                      // Convert response data to Artwork class.
+                      let artworks = response.data.data;
+                      // Build results
+                      let results = [];
+                      _.each(artworks, function (artwork) {
+                          results.push(artwork.attributes.object_number)
+                      });
+                      console.log('Autocomplete results:');
+                      console.log(results);
+                      // uses Vue.set to be sure to be deeply reactive
+                      this.autocomplete_results = results;
+                  })
+                  .catch(error => {
+                      // in case of error, empties the Artwork
+                      this.autocomplete_results = [];
+                      return Promise.reject(error);
+                  });
           },
     },
       watch: {
-          autocompleteItems: function (val, oldValue) {
-              // actually compare them
-              if (val.length !== oldValue.length) {
-                  this.autocompleteResults = val;
-                  this.isAutocompleteLoading = false;
-              }
-          }
+          autocompleteSearch: _.debounce(function(query) { this.getAutocompleteResults(query) }, 500)
       },
       computed: {
           ...mapWaitingGetters({
               loadingArtwork: 'artwork loading',
           })
       },
-
-      mounted() {
-          document.addEventListener('click', this.handleAutocompleteClickOutside)
-      },
-      destroyed() {
-          document.removeEventListener('click', this.handleAutocompleteClickOutside)
-      }
+      mounted() {},
+      destroyed() {}
   };
 </script>
 
