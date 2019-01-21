@@ -8,7 +8,8 @@
                 size="lg"
                 placeholder="i.e. 1984.149.1"
                 v-on:hit="onAutocompleteSelected"
-                v-on:input="onAutocompleteChange">
+                v-on:input="onAutocompleteChange"
+                v-bind:value="object_number">
             <div slot="append">
                 <button @click="submit" class="btn btn-outline-secondary form-control-lg" type="button">Find</button>
             </div>
@@ -73,9 +74,12 @@
                   '&filter[object-number-filter][condition][operator]=STARTS_WITH' +
                   '&filter[object-number-filter][condition][value]=' + query +
                   '&filter[object-number-filter][condition][memberOf]=filter-group' +
-                  // TODO: Filter by on view items.
-                  '&sort=object_number';
-              '&page[limit]=10';
+                  '&filter[is-on-view-filter][condition][path]=is_on_view' +
+                  '&filter[is-on-view-filter][condition][operator]=CONTAINS' +
+                  '&filter[is-on-view-filter][condition][value]=1' +
+                  '&filter[is-on-view-filter][condition][memberOf]=filter-group' +
+                  '&sort=object_number' +
+                  '&page[limit]=10';
               await axios.get(endpoint + filters)
                   .then((response) => {
                       // Convert response data to Artwork class.
@@ -117,32 +121,9 @@
           margin: 1rem 0;
       }
       .autocomplete {
-          position: relative;
-          input {
+          button {
               font-size: inherit;
               border-radius: 0;
-          }
-          .autocomplete-results {
-              padding: 0;
-              margin-top: calc(2.25rem + 2px);
-              border: 1px solid #eeeeee;
-              height: 200px;
-              overflow: auto;
-              width: 100%;
-              position: absolute;
-              z-index: 99999;
-              background-color: #ffffff;
-          }
-          .autocomplete-result {
-              list-style: none;
-              text-align: left;
-              padding: 4px 2px;
-              cursor: pointer;
-          }
-          .autocomplete-result.is-active,
-          .autocomplete-result:hover {
-              background-color: #111111;
-              color: #ffffff;
           }
       }
   }

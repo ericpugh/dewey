@@ -4,6 +4,10 @@
         <div class="row">
             <div class="col-md">
                 <ArtworkImage :src="artwork.medium_image_url" :alt="artwork.title" title="artwork.title"></ArtworkImage>
+                <p v-if="artwork.is_on_view && artwork.on_view_location" class="location">
+                    {{ artwork.on_view_location.title }}
+                </p>
+
             </div>
             <div class="col-md">
                 <dl class="attributes dl-horizontal">

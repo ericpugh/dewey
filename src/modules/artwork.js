@@ -40,16 +40,12 @@ export default {
             // TODO: get the full "artist" relationship, maybe a seperate Class/API request?
             var filters = '?' +
                 // 'fields[artworks]=id,title,exhibition_label,gallery_label' +
-                '&include=default_image,artists,institutions,audio' +
+                '&include=default_image,artists,institutions,locations,audio' +
                 '&filter[filter-group][group][conjunction]=AND' +
                 '&filter[object-number-filter][condition][path]=object_number' +
                 '&filter[object-number-filter][condition][operator]=%3D' +
                 '&filter[object-number-filter][condition][value]=' + searchString +
                 '&filter[object-number-filter][condition][memberOf]=filter-group' +
-                //    'filter[is-on-view-filter][condition][path]=is_on_view' +
-                //    '&filter[is-on-view-filter][condition][operator]=%3D' +
-                //    '&filter[is-on-view-filter][condition][value]=true' +
-                //    '&filter[is-on-view-filter][condition][memberOf]=filter-group' +
                 '&page[limit]=1';
 
             await axios.get(endpoint + filters)
@@ -81,34 +77,55 @@ export default {
                             luce_object_quote: artwork.attributes.luce_object_quote ? artwork.attributes.luce_object_quote.processed : '',
                             new_acquisition_label: artwork.attributes.new_acquisition_label ? artwork.attributes.new_acquisition_label.processed : '',
                             publication_label: artwork.attributes.publication_label ? artwork.attributes.publication_label.processed : '',
+                            on_view_location: ''
                         };
                         // @TODO: get videos field!
                         // Parse the Ontology array items for friendly output.
                         if (artwork.attributes.ontology) {
-                            var parsed = [];
-                            var allowed_subjects = ['Subject Specific', 'Subject General', 'Patronage', 'Medium'];
+                            let parsed = [];
+                            // let allowed_subjects = ['Subject Specific', 'Subject General', 'Patronage', 'Medium'];
                             _.each(artwork.attributes.ontology, function (keyword) {
                                 // TODO: Test if allowed subject in keyword.
                                 // Replace backslash with an em dash.
-                                var keyword = keyword.replace(/\\/g, " &mdash; ");
+                                keyword = keyword.replace(/\\/g, " &mdash; ");
                                 parsed.push(keyword);
                             });
                             item.ontology = parsed;
                         }
                         // Get the Default Image file ID from the relationship.
-                        var file_id = ((((artwork || {}).relationships || {}).default_image || {}).data || {}).id;
-                        if (file_id) {
-                            item.file_id = file_id;
-                            // Get image url from the include.
-                            _.some(included, function (include, key, list) {
-                                if (include.type === 'files' && include.id === file_id) {
-                                    item.original_image_url = include.attributes.uri.url;
-                                    item.thumbnail_image_url = include.attributes.uri.url.replace('/files/files/', '/files/styles/max_325x325/s3/files/');
-                                    item.medium_image_url = include.attributes.uri.url.replace('/files/files/', '/files/styles/max_650x650/s3/files/');
+                        if (_.has(artwork, 'relationships.default_image.data.id')) {
+                            let id = artwork.relationships.default_image.data.id;
+                            if (id) {
+                                item.file_id = id;
+                                // Get image url from the include.
+                                _.some(included, function (include, key, list) {
+                                    if (include.type === 'files' && include.id === id) {
+                                        item.original_image_url = include.attributes.uri.url;
+                                        item.thumbnail_image_url = include.attributes.uri.url.replace('/files/files/', '/files/styles/max_325x325/s3/files/');
+                                        item.medium_image_url = include.attributes.uri.url.replace('/files/files/', '/files/styles/max_650x650/s3/files/');
+                                    }
+                                });
+                                if (item.original_image_url !== undefined) {
+                                    results.push(item);
                                 }
-                            });
-                            if (item.original_image_url !== undefined) {
-                                results.push(item);
+                            }
+                        }
+                        // Get a single on view location data.
+                        if (_.has(artwork, 'relationships.locations.data')) {
+                            let locations_data = (((artwork || {}).relationships || {}).locations || {}).data;
+                            if (locations_data) {
+                                // The first item in array contains the "complete" location.
+                                // TODO: verify first item is _always_ the full location.
+                                let id = _.head(locations_data).id;
+                                _.some(included, function (include, key, list) {
+                                    // Get the location label from relationship.
+                                    if (include.type === 'locations' && include.id === id) {
+                                        let location = {};
+                                        location.id = id;
+                                        location.title = include.attributes.title;
+                                        item.on_view_location = location;
+                                    }
+                                });
                             }
                         }
                     });

@@ -17,6 +17,7 @@ export default class Artwork {
         this.ontology = data.ontology;
         this.is_new_acquistion = data.is_new_acquistion;
         this.is_on_view = data.is_on_view;
+        this.on_view_location = data.on_view_location;
         this.original_image_url = data.original_image_url;
         this.thumbnail_image_url = data.thumbnail_image_url;
         this.medium_image_url = data.medium_image_url;
