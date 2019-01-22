@@ -3,7 +3,7 @@
         <!-- Tombstone -->
         <div class="row">
             <div class="col-md">
-                <ArtworkImage :src="artwork.default_image.medium_image_url" :alt="artwork.title" title="artwork.title"></ArtworkImage>
+                <b-img-lazy :src="artwork.default_image.medium_image_url" fluid-grow blank-color="#EFEFEF" alt="artwork.title" />
                 <p v-if="artwork.is_on_view && artwork.on_view_location" class="location">
                     {{ artwork.on_view_location.title }}
                 </p>
@@ -50,53 +50,30 @@
         </div>
 
         <!-- descriptions -->
-        <div v-if="artwork.exhibition_label" class="description card bg-light">
-            <div class="card-body">
-                <h5 class="card-title">Exhibition Label</h5>
-                <div v-html="artwork.exhibition_label" class="card-text">
-                    {{ artwork.exhibition_label }}
-                </div>
-            </div>
-        </div>
-        <div v-if="artwork.gallery_label" class="description card bg-light">
-            <div class="card-body">
-                <h5 class="card-title">Gallery Label</h5>
-                <div v-html="artwork.gallery_label" class="card-text">
-                    {{ artwork.gallery_label }}
-                </div>
-            </div>
-        </div>
-        <div v-if="artwork.luce_center_label" class="description card bg-light">
-            <div class="card-body">
-                <h5 class="card-title">Luce Center Label</h5>
-                <div v-html="artwork.luce_center_label" class="card-text">
-                    {{ artwork.luce_center_label }}
-                </div>
-            </div>
-        </div>
-        <div v-if="artwork.luce_object_quote" class="description card bg-light">
-            <div class="card-body">
-                <blockquote v-html="artwork.luce_object_quote" class="card-text">
-                    {{ artwork.luce_object_quote }}
-                </blockquote>
-            </div>
-        </div>
-        <div v-if="artwork.new_acquisition_label" class="description card bg-light">
-            <div class="card-body">
-                <h5 class="card-title">Acquisition Label</h5>
-                <div v-html="artwork.new_acquisition_label" class="card-text">
-                    {{ artwork.new_acquisition_label }}
-                </div>
-            </div>
-        </div>
-        <div v-if="artwork.publication_label" class="description card bg-light">
-            <div class="card-body">
-                <h5 class="card-title">Publication Label</h5>
-                <div v-html="artwork.publication_label" class="card-text">
-                    {{ artwork.publication_label }}
-                </div>
-            </div>
-        </div>
+        <b-card v-if="artwork.exhibition_label" title="Exhibition Label" class="description">
+            <p class="card-text" v-html="artwork.exhibition_label"></p>
+        </b-card>
+
+        <b-card v-if="artwork.gallery_label" title="Gallery Label" class="description">
+            <p class="card-text" v-html="artwork.gallery_label"></p>
+        </b-card>
+
+        <b-card v-if="artwork.luce_center_label" title="Luce Center Label" class="description">
+            <p class="card-text" v-html="artwork.luce_center_label"></p>
+        </b-card>
+
+        <b-card v-if="artwork.luce_object_quote" title="Quote" class="description">
+            <blockquote class="card-text" v-html="artwork.luce_object_quote"></blockquote>
+        </b-card>
+
+        <b-card v-if="artwork.new_acquisition_label" title="Acquisition Label" class="description">
+            <p class="card-text" v-html="artwork.new_acquisition_label"></p>
+        </b-card>
+
+        <b-card v-if="artwork.publication_label" title="Publication Label" class="description">
+            <p class="card-text" v-html="artwork.publication_label"></p>
+        </b-card>
+
         <div v-if="loadingNearbyArtworks" class="text-center">
             <p class="loading animate">Loading Nearby Artworks<span>.</span><span>.</span><span>.</span></p>
         </div>
@@ -109,7 +86,6 @@
 
 <script>
     import Artwork from '../models/ArtworkModel';
-    import ArtworkImage from "@/components/ArtworkImage.vue";
     import ArtworkList from "@/components/ArtworkList.vue";
     import { mapWaitingGetters } from 'vue-wait'
     import axios from 'axios';
@@ -117,7 +93,6 @@
     export default {
         name: 'ArtworkRecord',
         components: {
-            ArtworkImage,
             ArtworkList
         },
         methods: {

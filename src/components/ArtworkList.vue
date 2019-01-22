@@ -6,10 +6,10 @@
            v-scroll-to="{ el: '#app', duration: 300, easing: 'ease-out'}"
            class="list-group-item list-group-item-action">
             <div class="row">
-                <div class="col-2">
-                    <ArtworkImage :src="artwork.default_image.thumbnail_image_url" :alt="artwork.title" :title="artwork.title"></ArtworkImage>
+                <div class="col-12 col-sm-2">
+                    <b-img-lazy :src="artwork.default_image.thumbnail_image_url" fluid-grow blank-color="#EFEFEF" alt="artwork.title" />
                 </div>
-                <div class="col-10">
+                <div class="col-12 col-sm-10">
                     <dl class="attributes dl-horizontal">
                         <dt v-if="artwork.title || artwork.long_title" class="label">Title</dt>
                         <dd v-if="artwork.title" class="title">{{ artwork.title }}</dd>
@@ -25,14 +25,9 @@
 </template>
 
 <script>
-    import ArtworkImage from "@/components/ArtworkImage.vue";
-
     export default {
         name: 'ArtworkList',
         props: ['artworks'],
-        components: {
-            ArtworkImage
-        },
         methods: {
             setArtwork(artwork){
                 // Set the artwork in state.

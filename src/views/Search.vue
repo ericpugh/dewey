@@ -1,7 +1,7 @@
 <template>
   <div class="search page">
     <Navbar/>
-    <form name="search" class="autocomplete" @submit.prevent="submit" ref="search">
+      <form name="search" class="autocomplete" @submit.prevent="submit" ref="search">
         <vue-bootstrap-typeahead
                 :data="autocomplete_results"
                 v-model="autocompleteSearch"
@@ -113,10 +113,6 @@
 
 <style lang="scss">
   #app {
-    padding-top: 70px;
-      .alert {
-          margin: 1rem 0;
-      }
       .autocomplete {
           input, button {
               border-color: #333;
