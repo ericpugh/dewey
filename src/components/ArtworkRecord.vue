@@ -95,15 +95,15 @@
                 </div>
             </div>
         </div>
-        <div v-if="artwork.on_view_location" :artworks="this.nearby_artworks" class="nearby">
-            <h5>Nearby Artwork</h5>
-            <ArtworkList></ArtworkList>
+        <div v-if="artwork.nearby_artworks.length > 0" class="nearby">
+            <h5>Nearby Artworks</h5>
+            <ArtworkList :artworks="artwork.nearby_artworks"></ArtworkList>
         </div>
     </div>
 </template>
 
 <script>
-    // import Artwork from '../models/ArtworkClass';
+    import Artwork from '../models/ArtworkModel';
     import ArtworkImage from "@/components/ArtworkImage.vue";
     import ArtworkList from "@/components/ArtworkList.vue";
     import axios from 'axios';
@@ -114,55 +114,18 @@
             ArtworkImage,
             ArtworkList
         },
-        data: function () {
-            return {
-                nearby_artworks: [],
-            }
-        },
-        methods: {
-            getNearbyArtworks: async function (query) {
-                axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
-                axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
-                var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
-                var filters = '?' +
-                    'include=default_image,locations' +
-                    '&filter[location-filter][condition][path]=locations.id' +
-                    '&filter[location-filter][condition][operator]=%3D' +
-                    '&filter[location-filter][condition][value]=' + query +
-                    '&page[limit]=6';
-                await axios.get(endpoint + filters)
-                    .then((response) => {
-                        // Convert response data to Artwork class.
-                        let items = response.data.data;
-                        // Build results
-                        let results = [];
-                        _.each(artworks, function (artwork) {
-                            // TODO: create an array of "artwork" objects.
-                            results.push(artwork)
-                        });
-                        console.log('Nearby results:');
-                        console.log(results);
-                        // uses Vue.set to be sure to be deeply reactive
-                        this.nearby_artworks = results;
-                    })
-                    .catch(error => {
-                        // in case of error, empties the Artwork
-                        this.nearby_artworks = [];
-                        return Promise.reject(error);
-                    });
-
-            }
-        },
+        methods: {},
         computed: {
             artwork() {
                 return this.$store.state.artwork.artwork
             }
         },
-        created() {
-            // Get the "nearby" Artwork list.
-            // this.getNearbyArtworks();
-
+        watch: {
+            artwork: function () {
+                this.$store.dispatch('artwork/updateNearbyArtworks');
+            }
         },
+        created() {},
         mounted() {},
         destroyed() {}
     }

@@ -62,7 +62,39 @@ export default {
                     context.commit('setArtwork', {})
                     return Promise.reject(error)
                 });
+        },
+        // Update the artwork with "nearby" artworks matching a Location ID.
+        updateNearbyArtworks: async (context) => {
+            let location_id = context.state.artwork.on_view_location.id;
+            if (location_id) {
+                axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
+                axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+                var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
+                var filters = '?' +
+                    '&include=default_image,artists,institutions,locations,audio' +
+                    '&filter[location-filter][condition][path]=locations.id' +
+                    '&filter[location-filter][condition][operator]=%3D' +
+                    '&filter[location-filter][condition][value]=' + location_id +
+                    '&page[limit]=6';
+                await axios.get(endpoint + filters)
+                    .then((response) => {
+                        let data = _.has(response.data, 'data') ? response.data.data : {};
+                        let included = _.has(response.data, 'included') ? response.data.included : {};
+                        // Build results
+                        let results = [];
+                        _.each(data, function (datum) {
+                            let artwork = new Artwork(datum, included);
+                            results.push(artwork);
+                        });
+                        context.state.artwork.nearby_artworks = results;
+                        return Promise.resolve(context.state.artwork);
+                    })
+                    .catch(error => {
+                        return Promise.reject(error);
+                    });
+            }
         }
+
     }
 
 }

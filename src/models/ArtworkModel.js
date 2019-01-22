@@ -33,9 +33,12 @@ export default class Artwork {
         this.on_view_location = {};
         this.default_image = {};
         this.setIncluded(included);
+
+        // Custom properties
+        this.nearby_artworks = [];
     }
 
-    setAttributes (data) {
+    setAttributes(data) {
         this.id = data.id;
         this.relationships = data.relationships;
         this.object_number = data.attributes.object_number;
@@ -67,7 +70,6 @@ export default class Artwork {
                 _.each(allowed_subjects, function (subject) {
                     if (_.includes(words, subject)) {
                         let position = _.indexOf(words, subject);
-                        window.console.log(position);
                         let friendly = _.remove(words, function(value, index) {
                             return index > position;
                         });
@@ -79,10 +81,10 @@ export default class Artwork {
         }
     }
 
-    setIncluded (included) {
+    setIncluded(included) {
         // Get the default image relationship data.
         if (_.has(this.relationships, 'default_image.data')) {
-            let default_image_id = this.relationships.default_image.data.id;
+            let default_image_id = this.relationships.default_image.data.id || null;
             if (default_image_id) {
                 let default_image = _.head(_.filter(included, include => include.id === default_image_id));
                 if (default_image) {
@@ -112,8 +114,8 @@ export default class Artwork {
             }
         }
 
-        // @TODO: get videos field!
-
+        // @TODO: get audio and videos fields!
 
     }
+
 }
