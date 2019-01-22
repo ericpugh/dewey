@@ -118,9 +118,17 @@
           margin: 1rem 0;
       }
       .autocomplete {
-          button {
-              font-size: inherit;
+          input, button {
+              border-color: #333;
+              color: #333;
               border-radius: 0;
+          }
+          button {
+              &:hover {
+                  color: #FFF;
+              }
+              font-size: inherit;
+              margin-left: 0.25rem;
           }
       }
   }

@@ -3,8 +3,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import VueWait from "vue-wait";
-import BootstrapVue from "bootstrap-vue";
 import VueScrollTo from "vue-scrollto";
+import BootstrapVue from "bootstrap-vue";
+
 Vue.use(VueWait);
 Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
