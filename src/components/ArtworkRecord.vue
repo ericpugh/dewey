@@ -97,6 +97,9 @@
                 </div>
             </div>
         </div>
+        <div v-if="loadingNearbyArtworks" class="text-center">
+            <p class="loading animate">Loading Nearby Artworks<span>.</span><span>.</span><span>.</span></p>
+        </div>
         <div v-if="artwork.nearby_artworks.length > 0" class="nearby">
             <h5>Nearby Artworks</h5>
             <ArtworkList :artworks="artwork.nearby_artworks"></ArtworkList>
@@ -108,6 +111,7 @@
     import Artwork from '../models/ArtworkModel';
     import ArtworkImage from "@/components/ArtworkImage.vue";
     import ArtworkList from "@/components/ArtworkList.vue";
+    import { mapWaitingGetters } from 'vue-wait'
     import axios from 'axios';
 
     export default {
@@ -116,15 +120,27 @@
             ArtworkImage,
             ArtworkList
         },
-        methods: {},
+        methods: {
+            nearby: async function () {
+                this.$wait.start('nearby artworks loading');
+                await this.$store.dispatch('artwork/updateNearbyArtworks').then(() => {
+                    this.$wait.end('nearby artworks loading');
+                });
+            }
+        },
         computed: {
             artwork() {
                 return this.$store.state.artwork.artwork
-            }
+            },
+            ...mapWaitingGetters({
+                loadingNearbyArtworks: 'nearby artworks loading',
+            })
         },
         watch: {
             artwork: function () {
-                this.$store.dispatch('artwork/updateNearbyArtworks');
+                if (this.artwork.nearby_artworks && this.artwork.nearby_artworks.length == 0) {
+                    this.nearby();
+                }
                 this.$store.dispatch('recent/add', this.artwork);
             }
         },

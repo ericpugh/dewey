@@ -51,7 +51,7 @@
               console.log('Object Number: ' + this.object_number);
               // TODO: disable the "submit" button if the input value is equal to the current object number.
               this.$wait.start('artwork loading');
-              // TODO: pull Artwork from "recent" list if exists, before making the async action.
+              // TODO: pull Artwork from "recent" list if exists, before making the async action!!
               await this.$store.dispatch('artwork/fetch', this.object_number).then(() => {
                   this.$wait.end('artwork loading');
               });
@@ -129,6 +129,12 @@
               }
               font-size: inherit;
               margin-left: 0.25rem;
+          }
+          .vbt-autcomplete-list {
+              .list-group-item-action.active {
+                  background-color: #6c757d;
+                  color: #FFF;
+              }
           }
       }
   }

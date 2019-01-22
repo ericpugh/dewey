@@ -28,10 +28,8 @@ export default {
                 });
                 // Add artwork to front of array.
                 added.unshift(artwork);
-                // Limit list size to 25 items
+                // Limit final list size to 25 items
                 context.state.recent = added.slice(0,25);
-                console.log('Recent Items after add:');
-                console.log(context.state.recent);
             }
         }
     }

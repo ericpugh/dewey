@@ -37,6 +37,8 @@
             setArtwork(artwork){
                 // Set the artwork in state.
                 this.$store.commit('artwork/setArtwork', artwork);
+                // Return to "search" page.
+                this.$router.push({ name: 'search' });
             }
         },
         computed: {
