@@ -1,4 +1,6 @@
-/** Model definition file for the Artist Class **/
+/**
+ * Artist model
+ */
 
 import store from '../store'
 

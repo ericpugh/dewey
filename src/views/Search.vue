@@ -82,16 +82,12 @@
                   '&page[limit]=10';
               await axios.get(endpoint + filters)
                   .then((response) => {
-                      // Convert response data to Artwork class.
                       let artworks = response.data.data;
-                      // Build results
+                      // Filter results.
                       let results = [];
                       _.each(artworks, function (artwork) {
                           results.push(artwork.attributes.object_number)
                       });
-                      console.log('Autocomplete results:');
-                      console.log(results);
-                      // uses Vue.set to be sure to be deeply reactive
                       this.autocomplete_results = results;
                   })
                   .catch(error => {
@@ -109,6 +105,7 @@
               loadingArtwork: 'artwork loading',
           })
       },
+      created() {},
       mounted() {},
       destroyed() {}
   };
