@@ -38,9 +38,11 @@
                     <dd v-if="artwork.display_mediums" class="mediums">
                         {{ artwork.display_mediums }}
                     </dd>
-                    <dt v-if="artwork.ontology" class="label">Keywords</dt>
-                    <dd v-for="keyword in artwork.ontology" class="ontology">
-                        <li v-html="keyword"></li>
+                    <dt v-if="artwork.ontology.length > 0" class="label">Keywords</dt>
+                    <dd v-if="artwork.ontology.length > 0" class="ontology">
+                        <ul>
+                            <li v-for="(keyword, index) in artwork.ontology" :key="index" v-html="keyword"></li>
+                        </ul>
                     </dd>
 
                 </dl>
@@ -123,6 +125,7 @@
         watch: {
             artwork: function () {
                 this.$store.dispatch('artwork/updateNearbyArtworks');
+                this.$store.dispatch('recent/add', this.artwork);
             }
         },
         created() {},
@@ -135,6 +138,10 @@
     .artwork {
         text-align: left;
         margin: 1rem;
+        .ontology ul {
+            list-style-type: none;
+            padding: 0;
+        }
         .description {
             margin: 1rem 0;
         }

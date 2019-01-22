@@ -25,11 +25,3 @@
         </div>
     </nav>
 </template>
-
-<scritp>
-
-</scritp>
-
-<styles>
-
-</styles>
