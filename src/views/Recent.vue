@@ -3,7 +3,7 @@
         <Navbar/>
         <h1 class="display-3">Recently Viewed</h1>
         <ArtworkList v-if="recent.length > 0" :artworks="recent"></ArtworkList>
-        <b-alert v-else show variant="secondary">You haven't <router-link to="/">searched</router-link> for an artwork yet</b-alert>
+        <b-alert v-else show variant="secondary">You haven't <router-link to="/" class="alert-link">searched</router-link> for an artwork yet</b-alert>
     </div>
 </template>
 

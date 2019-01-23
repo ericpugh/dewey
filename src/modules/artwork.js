@@ -4,7 +4,7 @@ import Vue from 'vue'
 import Artwork from '../models/ArtworkModel'
 import axios from 'axios';
 // @TODO: a better way to include lodash in entire project? see: https://vuejsdevelopers.com/2017/04/22/vue-js-libraries-plugins/
-import _ from 'lodash';
+import _ from "lodash";
 
 export default {
     namespaced: true,

@@ -49,36 +49,43 @@
             </div>
         </div>
 
-        <!-- descriptions -->
-        <b-card v-if="artwork.exhibition_label" title="Exhibition Label" class="description">
+        <h3 v-if="artwork.exhibition_label || artwork.gallery_label || artwork.luce_center_label || artwork.luce_object_quote || artwork.new_acquisition_label || artwork.publication_label">
+            Description
+        </h3>
+        <b-card v-if="artwork.exhibition_label" title="Exhibition Label" class="description exhibition-description">
             <p class="card-text" v-html="artwork.exhibition_label"></p>
         </b-card>
-
-        <b-card v-if="artwork.gallery_label" title="Gallery Label" class="description">
+        <b-card v-if="artwork.gallery_label" title="Gallery Label" class="description gallery-description">
             <p class="card-text" v-html="artwork.gallery_label"></p>
         </b-card>
-
-        <b-card v-if="artwork.luce_center_label" title="Luce Center Label" class="description">
+        <b-card v-if="artwork.luce_center_label" title="Luce Center Label" class="description luce-description">
             <p class="card-text" v-html="artwork.luce_center_label"></p>
         </b-card>
-
-        <b-card v-if="artwork.luce_object_quote" title="Quote" class="description">
+        <b-card v-if="artwork.luce_object_quote" title="Quote" class="description luce-quote">
             <blockquote class="card-text" v-html="artwork.luce_object_quote"></blockquote>
         </b-card>
-
-        <b-card v-if="artwork.new_acquisition_label" title="Acquisition Label" class="description">
+        <b-card v-if="artwork.new_acquisition_label" title="Acquisition Label" class="description description">
             <p class="card-text" v-html="artwork.new_acquisition_label"></p>
         </b-card>
-
-        <b-card v-if="artwork.publication_label" title="Publication Label" class="description">
+        <b-card v-if="artwork.publication_label" title="Publication Label" class="description publication-description">
             <p class="card-text" v-html="artwork.publication_label"></p>
         </b-card>
+
+        <!-- TODO: add audio player -->
+        <!-- TODO: add video player -->
+
+        <div v-if="artwork.artists.length > 0">
+            <h3>Artists</h3>
+            <div v-for="artist in artwork.artists" :key="artist.id">
+                <ArtistCard :artist="artist" class="description"></ArtistCard>
+            </div>
+        </div>
 
         <div v-if="loadingNearbyArtworks" class="text-center">
             <p class="loading animate">Loading Nearby Artworks<span>.</span><span>.</span><span>.</span></p>
         </div>
         <div v-if="artwork.nearby_artworks.length > 0" class="nearby">
-            <h5>Nearby Artworks</h5>
+            <h3>Nearby Artworks</h3>
             <ArtworkList :artworks="artwork.nearby_artworks"></ArtworkList>
         </div>
     </div>
@@ -86,13 +93,15 @@
 
 <script>
     import Artwork from '../models/ArtworkModel';
-    import ArtworkList from "@/components/ArtworkList.vue";
     import { mapWaitingGetters } from 'vue-wait'
     import axios from 'axios';
+    import ArtistCard from "@/components/ArtistCard.vue";
+    import ArtworkList from "@/components/ArtworkList.vue";
 
     export default {
         name: 'ArtworkRecord',
         components: {
+            ArtistCard,
             ArtworkList
         },
         methods: {

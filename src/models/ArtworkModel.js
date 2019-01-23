@@ -3,6 +3,8 @@
  */
 
 import store from '../store'
+import _ from "lodash";
+import Artist from './ArtistModel';
 
 export default class Artwork {
     constructor (data = {}, included = {}) {
@@ -31,6 +33,7 @@ export default class Artwork {
 
         // Includes
         this.on_view_location = {};
+        this.artists = [];
         this.default_image = {};
         this.setIncluded(included);
 
@@ -82,6 +85,7 @@ export default class Artwork {
     }
 
     setIncluded(included) {
+        // TODO: break this up into separate functions?
         // Get the default image relationship data.
         if (_.has(this.relationships, 'default_image.data')) {
             let default_image_id = this.relationships.default_image.data.id || null;
@@ -102,9 +106,10 @@ export default class Artwork {
         }
         // Get a single "on view location" relationship data.
         if (_.has(this.relationships, 'locations.data')) {
+            let location_ids = _.map(this.relationships.locations.data, 'id');
             // The first item in array contains the "complete" location.
-            // TODO: verify first item is _always_ the full location.
-            let location_id = _.head(this.relationships.locations.data).id;
+            // TODO: verify first item is _always_ the full location, and if not how to figure out which location (by name length?).
+            let location_id = _.head(location_ids);
             let location = _.head(_.filter(included, include => include.id === location_id));
             if (location) {
                 this.on_view_location = {
@@ -112,6 +117,21 @@ export default class Artwork {
                     'title' : location.attributes.title,
                 }
             }
+        }
+        // Get the artists relationship data.
+        if (_.has(this.relationships, 'artists.data')) {
+            let artist_ids = _.map(this.relationships.artists.data, 'id');
+            let results = [];
+            _.each(artist_ids, function (artist_id) {
+                let data = _.head(_.filter(included, include => include.id === artist_id));
+                if (_.has(data, 'attributes')) {
+                    // Attach the Artist ID and create a new artist.
+                    data.attributes.id = artist_id;
+                    let artist = new Artist(data.attributes);
+                    results.push(artist);
+                }
+            })
+            this.artists = results;
         }
 
         // @TODO: get audio and videos fields!

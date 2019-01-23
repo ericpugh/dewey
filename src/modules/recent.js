@@ -28,8 +28,8 @@ export default {
                 });
                 // Add artwork to front of array.
                 added.unshift(artwork);
-                // Limit final list size to 25 items
-                context.state.recent = added.slice(0,25);
+                // Limit final list size to 35 items
+                context.state.recent = added.slice(0,35);
             }
         }
     }
