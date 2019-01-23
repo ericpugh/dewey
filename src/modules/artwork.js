@@ -37,8 +37,7 @@ export default {
             // TODO: install "devour" inorder to include relationships like default_image?
             // TODO: get the full "artist" relationship, maybe a seperate Class/API request?
             var filters = '?' +
-                // 'fields[artworks]=id,title,exhibition_label,gallery_label' +
-                '&include=default_image,artists,institutions,locations,audio' +
+                'include=default_image,artists,institutions,locations,videos,audio' +
                 '&filter[filter-group][group][conjunction]=AND' +
                 '&filter[object-number-filter][condition][path]=object_number' +
                 '&filter[object-number-filter][condition][operator]=%3D' +
@@ -51,6 +50,7 @@ export default {
                     // Convert response data to Artwork class.
                     let attributes = _.has(response.data, 'data') ?_.head(response.data.data) : {};
                     let included = _.has(response.data, 'included') ? response.data.included : {};
+                    // TODO: Handle invalid artwork, when unexpected response data.
                     let artwork = new Artwork(attributes, included);
                     window.console.log(artwork);
                     // uses Vue.set to be sure to be deeply reactive
@@ -72,7 +72,7 @@ export default {
                 axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
                 var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
                 var filters = '?' +
-                    '&include=default_image,artists,institutions,locations,audio' +
+                    '&include=default_image,artists,institutions,locations,videos,audio' +
                     '&filter[location-filter][condition][path]=locations.id' +
                     '&filter[location-filter][condition][operator]=%3D' +
                     '&filter[location-filter][condition][value]=' + location_id +

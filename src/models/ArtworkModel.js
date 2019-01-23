@@ -34,6 +34,8 @@ export default class Artwork {
         // Includes
         this.on_view_location = {};
         this.artists = [];
+        this.audio_ids = [];
+        this.videos = [];
         this.default_image = {};
         this.setIncluded(included);
 
@@ -61,7 +63,6 @@ export default class Artwork {
         this.luce_object_quote = data.attributes.luce_object_quote ? data.attributes.luce_object_quote.processed : '',
         this.new_acquisition_label = data.attributes.new_acquisition_label ? data.attributes.new_acquisition_label.processed : '',
         this.publication_label = data.attributes.publication_label ? data.attributes.publication_label.processed : '';
-        this.on_view_location = '';
 
         // Parse the Ontology array items for friendly output.
         if (data.attributes.ontology) {
@@ -133,8 +134,35 @@ export default class Artwork {
             })
             this.artists = results;
         }
+        // Get the audio ids from relationship data.
+        // Since audio requires additional included data, we'll have to fetch this async.
+        if (_.has(this.relationships, 'audio.data')) {
+            let audio_ids = _.map(this.relationships.audio.data, 'id');
+            this.audio_ids = audio_ids || [];
+        }
+        // Get "remote video" relationship data
+        if (_.has(this.relationships, 'videos.data')) {
+            console.log(this.relationships.videos.data);
+            let video_ids = [];
+            _.each(this.relationships.videos.data, function (item) {
+                if (item.type === 'remote_videos') {
+                    video_ids.push(item.id);
+                }
+            });
+            let results = [];
+            _.each(video_ids, function (video_id) {
+                let data = _.head(_.filter(included, include => include.id === video_id));
+                if (_.has(data, 'attributes')) {
+                    // Add video attributes to artwork property list.
+                    data.attributes.type = data.type;
+                    data.attributes.id = data.id;
+                    results.push(data.attributes);
+                }
+            })
+            this.videos = results;
+        }
 
-        // @TODO: get audio and videos fields!
+        // @TODO: get audio fields
 
     }
 

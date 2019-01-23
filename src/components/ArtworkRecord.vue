@@ -49,6 +49,15 @@
             </div>
         </div>
 
+        <div v-if="artwork.videos.length > 0">
+            <h3>Video</h3>
+            <div v-for="video in artwork.videos" :key="video.id">
+                <YoutubePlayer :media="video" class="media"></YoutubePlayer>
+            </div>
+        </div>
+
+        <!-- TODO: add audio player with async request (using artwork.audio_ids) -->
+
         <h3 v-if="artwork.exhibition_label || artwork.gallery_label || artwork.luce_center_label || artwork.luce_object_quote || artwork.new_acquisition_label || artwork.publication_label">
             Description
         </h3>
@@ -71,9 +80,6 @@
             <p class="card-text" v-html="artwork.publication_label"></p>
         </b-card>
 
-        <!-- TODO: add audio player -->
-        <!-- TODO: add video player -->
-
         <div v-if="artwork.artists.length > 0">
             <h3>Artists</h3>
             <div v-for="artist in artwork.artists" :key="artist.id">
@@ -95,12 +101,14 @@
     import Artwork from '../models/ArtworkModel';
     import { mapWaitingGetters } from 'vue-wait'
     import axios from 'axios';
+    import YoutubePlayer from "@/components/YoutubePlayer.vue";
     import ArtistCard from "@/components/ArtistCard.vue";
     import ArtworkList from "@/components/ArtworkList.vue";
 
     export default {
         name: 'ArtworkRecord',
         components: {
+            YoutubePlayer,
             ArtistCard,
             ArtworkList
         },
@@ -142,7 +150,7 @@
             list-style-type: none;
             padding: 0;
         }
-        .description {
+        .description, .media {
             margin: 1rem 0;
         }
     }
