@@ -3,7 +3,7 @@
         <!-- Tombstone -->
         <div class="row">
             <div class="col-md">
-                <b-img-lazy :src="artwork.default_image.medium_image_url" fluid-grow blank-color="#EFEFEF" alt="artwork.title" />
+                <b-img :src="artwork.default_image.medium_image_url" fluid-grow blank-color="#EFEFEF" alt="artwork.title" />
                 <p v-if="artwork.is_on_view && artwork.on_view_location" class="location">
                     {{ artwork.on_view_location.title }}
                 </p>

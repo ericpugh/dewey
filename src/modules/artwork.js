@@ -65,6 +65,7 @@ export default {
         },
         // Update the artwork with "nearby" artworks matching a Location ID.
         updateNearbyArtworks: async (context) => {
+            let parent_artwork_id = context.state.artwork.id;
             let location_id = context.state.artwork.on_view_location.id;
             if (location_id) {
                 axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
@@ -83,8 +84,11 @@ export default {
                         // Build results
                         let results = [];
                         _.each(data, function (datum) {
-                            let artwork = new Artwork(datum, included);
-                            results.push(artwork);
+                            // Add artwork to "nearby" artworks if its not the parent Artwork.
+                            if (datum.id !== parent_artwork_id) {
+                                let artwork = new Artwork(datum, included);
+                                results.push(artwork);
+                            }
                         });
                         context.state.artwork.nearby_artworks = results;
                         return Promise.resolve(context.state.artwork);

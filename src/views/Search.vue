@@ -47,8 +47,6 @@
       },
       methods: {
           submit: async function () {
-              console.log('Artwork fetch:');
-              console.log('Object Number: ' + this.object_number);
               // TODO: disable the "submit" button if the input value is equal to the current object number.
               this.$wait.start('artwork loading');
               // TODO: pull Artwork from "recent" list if exists, before making the async action!!
