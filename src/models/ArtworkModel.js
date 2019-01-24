@@ -39,7 +39,8 @@ export default class Artwork {
         this.default_image = {};
         this.setIncluded(included);
 
-        // Custom properties
+        // Custom (async) properties
+        this.audio = [];
         this.nearby_artworks = [];
     }
 
@@ -142,7 +143,6 @@ export default class Artwork {
         }
         // Get "remote video" relationship data
         if (_.has(this.relationships, 'videos.data')) {
-            console.log(this.relationships.videos.data);
             let video_ids = [];
             _.each(this.relationships.videos.data, function (item) {
                 if (item.type === 'remote_videos') {
@@ -161,8 +161,6 @@ export default class Artwork {
             })
             this.videos = results;
         }
-
-        // @TODO: get audio fields
 
     }
 

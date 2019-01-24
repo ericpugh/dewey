@@ -49,6 +49,16 @@
             </div>
         </div>
 
+        <div v-if="loadingAudio" class="text-center">
+            <p class="loading animate">Loading Audio<span>.</span><span>.</span><span>.</span></p>
+        </div>
+        <div v-if="artwork.audio.length > 0">
+            <h3>Audio</h3>
+            <b-card v-for="audio in artwork.audio" :key="audio.id">
+                <AudioPlayer :file="audio.uri.url" :title="audio.title"></AudioPlayer>
+            </b-card>
+        </div>
+
         <div v-if="artwork.videos.length > 0">
             <h3>Video</h3>
             <div v-for="video in artwork.videos" :key="video.id">
@@ -56,7 +66,6 @@
             </div>
         </div>
 
-        <!-- TODO: add audio player with async request (using artwork.audio_ids) -->
 
         <h3 v-if="artwork.exhibition_label || artwork.gallery_label || artwork.luce_center_label || artwork.luce_object_quote || artwork.new_acquisition_label || artwork.publication_label">
             Description
@@ -102,21 +111,29 @@
     import { mapWaitingGetters } from 'vue-wait'
     import axios from 'axios';
     import YoutubePlayer from "@/components/YoutubePlayer.vue";
+    import AudioPlayer from "@/components/AudioPlayer.vue";
     import ArtistCard from "@/components/ArtistCard.vue";
     import ArtworkList from "@/components/ArtworkList.vue";
 
     export default {
         name: 'ArtworkRecord',
         components: {
+            AudioPlayer,
             YoutubePlayer,
             ArtistCard,
             ArtworkList
         },
         methods: {
-            nearby: async function () {
+            fetchNearbyArtworks: async function () {
                 this.$wait.start('nearby artworks loading');
                 await this.$store.dispatch('artwork/updateNearbyArtworks').then(() => {
                     this.$wait.end('nearby artworks loading');
+                });
+            },
+            fetchAudio: async function (id) {
+                this.$wait.start('audio loading');
+                await this.$store.dispatch('artwork/updateAudio', id).then(() => {
+                    this.$wait.end('audio loading');
                 });
             }
         },
@@ -126,12 +143,19 @@
             },
             ...mapWaitingGetters({
                 loadingNearbyArtworks: 'nearby artworks loading',
+                loadingAudio: 'audio loading',
             })
         },
         watch: {
             artwork: function () {
-                if (this.artwork.nearby_artworks && this.artwork.nearby_artworks.length == 0) {
-                    this.nearby();
+                let self = this;
+                if (this.artwork.nearby_artworks.length == 0) {
+                    this.fetchNearbyArtworks();
+                }
+                if (this.artwork.audio_ids.length !== 0) {
+                    _.each(this.artwork.audio_ids, function (id) {
+                        self.fetchAudio(id);
+                    })
                 }
                 this.$store.dispatch('recent/add', this.artwork);
             }

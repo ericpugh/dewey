@@ -33,10 +33,10 @@ export default {
             axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
             axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
             // TODO: Set endpoint URL in a dev/production .env file without the CORS workaround.
-            var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
+            let endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
             // TODO: install "devour" inorder to include relationships like default_image?
             // TODO: get the full "artist" relationship, maybe a seperate Class/API request?
-            var filters = '?' +
+            let filters = '?' +
                 'include=default_image,artists,institutions,locations,videos,audio' +
                 '&filter[filter-group][group][conjunction]=AND' +
                 '&filter[object-number-filter][condition][path]=object_number' +
@@ -68,10 +68,11 @@ export default {
             let parent_artwork_id = context.state.artwork.id;
             let location_id = context.state.artwork.on_view_location.id;
             if (location_id) {
+                // TODO: set defaults in on place?
                 axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
                 axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
-                var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
-                var filters = '?' +
+                let endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
+                let filters = '?' +
                     '&include=default_image,artists,institutions,locations,videos,audio' +
                     '&filter[location-filter][condition][path]=locations.id' +
                     '&filter[location-filter][condition][operator]=%3D' +
@@ -97,7 +98,34 @@ export default {
                         return Promise.reject(error);
                     });
             }
-        }
+        },
+        // Update the artwork with Audio data.
+        updateAudio: async (context, audio_id) => {
+            axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
+            axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+            let filters = '?' +
+                'include=file' +
+                '&page[limit]=1';
+            let endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/audio/' + audio_id;
+            await axios.get(endpoint + filters)
+                .then((response) => {
+                    let data = _.has(response.data, 'data') ? response.data.data : {};
+                    let included = _.has(response.data, 'included') ? response.data.included : {};
+                    let results = [];
+                    _.each(included, function (include) {
+                        if (_.has(include, 'attributes.filemime')) {
+                            include.attributes.id = include.id;
+                            include.attributes.title = data.attributes.title;
+                            results.unshift(include.attributes);
+                        }
+                    });
+                    context.state.artwork.audio = results;
+                    return Promise.resolve(context.state.artwork);
+                })
+                .catch(error => {
+                    return Promise.reject(error);
+                });
+        },
 
     }
 

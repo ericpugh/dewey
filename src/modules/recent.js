@@ -1,9 +1,9 @@
 /** Store module to handle recent artwork history **/
 
-import Vue from 'vue'
-import Artwork from '../models/ArtworkModel'
-import axios from 'axios';
-import _ from 'lodash';
+// import Vue from "vue";
+import Artwork from "../models/ArtworkModel";
+// import axios from "axios";
+import _ from "lodash";
 
 export default {
     namespaced: true,
