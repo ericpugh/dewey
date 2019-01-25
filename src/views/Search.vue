@@ -23,7 +23,7 @@
 </template>
 
 <script>
-    // import Artwork from '../models/ArtworkClass'
+    import _ from "lodash";
     import Navbar from "@/components/Navbar.vue";
     import ArtworkRecord from "@/components/ArtworkRecord.vue";
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
@@ -52,7 +52,6 @@
       data: function () {
           return {
               object_number: '',
-              autocomplete_results: [],
               autocompleteSearch: ''
           }
       },
@@ -72,48 +71,17 @@
           onAutocompleteChange: function(event) {
               this.object_number = event;
           },
-          async getAutocompleteResults(query) {
-              // TODO: move this to an action.
-              // TODO: Can I retrieve ALL object numbers in one request?
-              // TODO: Include thumbnail images in autocomplete results?
-              var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
-              var filters = '?' +
-                  'fields[artworks]=object_number' +
-                  '&filter[filter-group][group][conjunction]=AND' +
-                  '&filter[object-number-filter][condition][path]=object_number' +
-                  '&filter[object-number-filter][condition][operator]=STARTS_WITH' +
-                  '&filter[object-number-filter][condition][value]=' + query +
-                  '&filter[object-number-filter][condition][memberOf]=filter-group' +
-                  '&filter[is-on-view-filter][condition][path]=is_on_view' +
-                  '&filter[is-on-view-filter][condition][operator]=CONTAINS' +
-                  '&filter[is-on-view-filter][condition][value]=1' +
-                  '&filter[is-on-view-filter][condition][memberOf]=filter-group' +
-                  '&sort=object_number' +
-                  '&page[limit]=10';
-              await axios.get(endpoint + filters)
-                  .then((response) => {
-                      let artworks = response.data.data;
-                      // Filter results.
-                      let results = [];
-                      _.each(artworks, function (artwork) {
-                          results.push(artwork.attributes.object_number)
-                      });
-                      this.autocomplete_results = results;
-                  })
-                  .catch(error => {
-                      // in case of error, empties the Artwork
-                      this.autocomplete_results = [];
-                      return Promise.reject(error);
-                  });
-          },
     },
       watch: {
-          autocompleteSearch: _.debounce(function(query) { this.getAutocompleteResults(query) }, 500)
+          autocompleteSearch: _.debounce(function(query) { this.$store.dispatch('autocomplete/FETCH', query) }, 500)
       },
       computed: {
           ...mapWaitingGetters({
               loadingArtwork: 'artwork loading',
-          })
+          }),
+          autocomplete_results() {
+              return this.$store.state.autocomplete.results;
+          }
       },
       created() {},
       mounted() {},

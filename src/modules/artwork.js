@@ -11,7 +11,6 @@ axios.interceptors.request.use(
         config.headers['X-Api-Key'] = process.env.VUE_APP_API_KEY;
         return config;
     },
-
     (error) => {
         return Promise.reject(error);
     }

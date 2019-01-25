@@ -3,6 +3,17 @@
 import Vue from "vue";
 import Artwork from "../models/ArtworkModel";
 import _ from "lodash";
+import axios from 'axios';
+axios.interceptors.request.use(
+    (config) => {
+        config.headers['Accept'] = 'application/vnd.api+json';
+        config.headers['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 export default {
     namespaced: true,
