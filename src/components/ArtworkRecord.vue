@@ -126,13 +126,13 @@
         methods: {
             fetchNearbyArtworks: async function () {
                 this.$wait.start('nearby artworks loading');
-                await this.$store.dispatch('artwork/updateNearbyArtworks').then(() => {
+                await this.$store.dispatch('artwork/UPDATE_NEARBY_ARTWORKS').then(() => {
                     this.$wait.end('nearby artworks loading');
                 });
             },
             fetchAudio: async function (id) {
                 this.$wait.start('audio loading');
-                await this.$store.dispatch('artwork/updateAudio', id).then(() => {
+                await this.$store.dispatch('artwork/UPDATE_AUDIO', id).then(() => {
                     this.$wait.end('audio loading');
                 });
             }
@@ -157,7 +157,7 @@
                         self.fetchAudio(id);
                     })
                 }
-                this.$store.dispatch('recent/add', this.artwork);
+                this.$store.commit('recent/ADD', this.artwork);
             }
         },
         created() {},

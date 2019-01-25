@@ -2,9 +2,20 @@
 
 import Vue from 'vue'
 import Artwork from '../models/ArtworkModel'
-import axios from 'axios';
 // @TODO: a better way to include lodash in entire project? see: https://vuejsdevelopers.com/2017/04/22/vue-js-libraries-plugins/
 import _ from "lodash";
+import axios from 'axios';
+axios.interceptors.request.use(
+    (config) => {
+        config.headers['Accept'] = 'application/vnd.api+json';
+        config.headers['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+        return config;
+    },
+
+    (error) => {
+        return Promise.reject(error);
+    }
+);
 
 export default {
     namespaced: true,
@@ -18,21 +29,19 @@ export default {
     },
     // ----------------------------------------------------------------------------------
     mutations: {
-        setArtwork: (state, artwork) => {
+        SET: (state, artwork) => {
             Vue.set(state, 'artwork', artwork)
         }
     },
     // ----------------------------------------------------------------------------------
     actions: {
         // Search for a artwork matching an Object Number string.
-        fetch: async (context, searchString) => {
+        FETCH: async (context, searchString) => {
             if (!searchString) {
-                context.commit('setArtwork', {})
+                context.commit('SET', {})
                 return Promise.resolve({})
             }
-            axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
-            axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
-            // TODO: Set endpoint URL in a dev/production .env file without the CORS workaround.
+            // TODO: Set base URL in a dev/production .env file without the CORS workaround.
             let endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
             // TODO: install "devour" inorder to include relationships like default_image?
             // TODO: get the full "artist" relationship, maybe a seperate Class/API request?
@@ -54,23 +63,20 @@ export default {
                     let artwork = new Artwork(attributes, included);
                     window.console.log(artwork);
                     // uses Vue.set to be sure to be deeply reactive
-                    context.commit('setArtwork', artwork);
+                    context.commit('SET', artwork);
                     return Promise.resolve(context.state.artwork);
                 })
                 .catch(error => {
                     // in case of error, empties the Artwork
-                    context.commit('setArtwork', {})
+                    context.commit('SET', {})
                     return Promise.reject(error)
                 });
         },
         // Update the artwork with "nearby" artworks matching a Location ID.
-        updateNearbyArtworks: async (context) => {
+        UPDATE_NEARBY_ARTWORKS: async (context) => {
             let parent_artwork_id = context.state.artwork.id;
             let location_id = context.state.artwork.on_view_location.id;
             if (location_id) {
-                // TODO: set defaults in on place?
-                axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
-                axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
                 let endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
                 let filters = '?' +
                     '&include=default_image,artists,institutions,locations,videos,audio' +
@@ -91,6 +97,7 @@ export default {
                                 results.push(artwork);
                             }
                         });
+                        // TODO: use Vue.set in a mutation?
                         context.state.artwork.nearby_artworks = results;
                         return Promise.resolve(context.state.artwork);
                     })
@@ -100,9 +107,7 @@ export default {
             }
         },
         // Update the artwork with Audio data.
-        updateAudio: async (context, audio_id) => {
-            axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
-            axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+        UPDATE_AUDIO: async (context, audio_id) => {
             let filters = '?' +
                 'include=file' +
                 '&page[limit]=1';

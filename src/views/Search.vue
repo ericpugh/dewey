@@ -28,6 +28,17 @@
     import ArtworkRecord from "@/components/ArtworkRecord.vue";
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import axios from 'axios';
+    axios.interceptors.request.use(
+        (config) => {
+            config.headers['Accept'] = 'application/vnd.api+json';
+            config.headers['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+            return config;
+        },
+
+        (error) => {
+            return Promise.reject(error);
+        }
+    );
     import { mapWaitingGetters } from 'vue-wait'
 
     export default {
@@ -50,7 +61,7 @@
               // TODO: disable the "submit" button if the input value is equal to the current object number.
               this.$wait.start('artwork loading');
               // TODO: pull Artwork from "recent" list if exists, before making the async action!!
-              await this.$store.dispatch('artwork/fetch', this.object_number).then(() => {
+              await this.$store.dispatch('artwork/FETCH', this.object_number).then(() => {
                   this.$wait.end('artwork loading');
               });
           },
@@ -62,8 +73,9 @@
               this.object_number = event;
           },
           async getAutocompleteResults(query) {
-              axios.defaults.headers.common['Accept'] = 'application/vnd.api+json';
-              axios.defaults.headers.common['X-Api-Key'] = process.env.VUE_APP_API_KEY;
+              // TODO: move this to an action.
+              // TODO: Can I retrieve ALL object numbers in one request?
+              // TODO: Include thumbnail images in autocomplete results?
               var endpoint = 'https://cors-anywhere.herokuapp.com/https://api.si.edu/saam/v1/artworks';
               var filters = '?' +
                   'fields[artworks]=object_number' +

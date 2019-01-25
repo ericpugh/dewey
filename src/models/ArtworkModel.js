@@ -89,8 +89,8 @@ export default class Artwork {
     setIncluded(included) {
         // TODO: break this up into separate functions?
         // Get the default image relationship data.
-        if (_.has(this.relationships, 'default_image.data')) {
-            let default_image_id = this.relationships.default_image.data.id || null;
+        if (_.has(this.relationships, 'default_image.data.id')) {
+            let default_image_id = this.relationships.default_image.data.id;
             if (default_image_id) {
                 let default_image = _.head(_.filter(included, include => include.id === default_image_id));
                 if (default_image) {

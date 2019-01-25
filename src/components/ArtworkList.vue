@@ -30,10 +30,12 @@
         props: ['artworks'],
         methods: {
             setArtwork(artwork){
-                // Set the artwork in state.
-                this.$store.commit('artwork/setArtwork', artwork);
+                // Set the selected artwork in state.
+                this.$store.commit('artwork/SET', artwork);
                 // Return to "search" page.
                 this.$router.push({ name: 'search' });
+                // Add or move the selected to the top of the recent artworks list.
+                this.$store.commit('recent/ADD', artwork);
             }
         },
         computed: {
